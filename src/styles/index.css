@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* Preline UI */
+@source "../node_modules/preline/dist/*.js";
+@import "preline/variants.css";
+
+/* Plugins */
+@plugin "@tailwindcss/forms";
+
+/* Dark mode selector */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* ============================================================
+     LOTTERY DESIGN SYSTEM — LIGHT THEME
+     Psychology: Trust, Hope, Simplicity, Legitimacy
+     60% Neutral / 30% Blue / 10% Gold
+     ============================================================ */
+
+  /* ---------- NEUTRALS (FOUNDATION | 60%) ---------- */
+  --color-background: #f9fafb; /* Page background */
+  --color-foreground: #111827; /* Primary text */
+
+  --color-card: #ffffff; /* Cards, panels */
+  --color-card-foreground: #111827;
+
+  --color-surface-2: #f3f4f6; /* Table headers, filter bars */
+
+  --color-muted: #f3f4f6; /* Disabled / muted blocks */
+  --color-muted-foreground: #6b7280; /* Secondary text */
+
+  --color-border: #e5e7eb; /* Dividers, table borders */
+  --color-input: #e5e7eb; /* Input borders */
+  --color-ring: #1e3a8a; /* Focus ring */
+
+  /* ---------- BRAND / TRUST BLUE (30%) ---------- */
+  --color-primary: #1e3a8a; /* Header, links, secondary CTAs */
+  --color-primary-hover: #172554;
+  --color-primary-foreground: #ffffff;
+
+  --color-primary-subtle: #e0e7ff; /* Active nav, selected rows */
+  --color-primary-subtle-foreground: #1e3a8a;
+
+  /* ---------- JACKPOT / CTA GOLD (10%) ---------- */
+  --color-accent: #facc15; /* Jackpot amount, Play CTA */
+  --color-accent-hover: #eab308;
+  --color-accent-foreground: #1f2937; /* Text on gold */
+
+  /* ---------- SEMANTIC STATES ---------- */
+  --color-success: #15803d; /* Win, confirmed, success */
+  --color-success-foreground: #ffffff;
+  --color-success-subtle: #dcfce7;
+  --color-success-subtle-foreground: #15803d;
+
+  --color-warning: #b45309; /* Pending, attention */
+  --color-warning-foreground: #ffffff;
+  --color-warning-subtle: #ffedd5;
+  --color-warning-subtle-foreground: #b45309;
+
+  --color-danger: #b91c1c; /* Error, invalid, failed */
+  --color-danger-foreground: #ffffff;
+  --color-danger-subtle: #fee2e2;
+  --color-danger-subtle-foreground: #b91c1c;
+
+  /* ---------- TYPOGRAPHY ---------- */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---------- SPACING ---------- */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+
+  /* ---------- RADII ---------- */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ---------- SHADOWS ---------- */
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.08);
+  --shadow-md: 0 4px 10px 0 rgb(15 23 42 / 0.12);
+  --shadow-lg: 0 12px 24px 0 rgb(15 23 42 / 0.18);
+  --shadow-focus: 0 0 0 3px rgb(30 58 138 / 0.35);
+
+  /* ---------- BREAKPOINTS ---------- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* ============================================================
+   DARK THEME — LOTTERY / LOW-LIGHT MODE
+   Psychology: Focus, Sophistication, Reduced Eye Strain
+   ============================================================ */
+
+.dark {
+  /* ---------- NEUTRALS ---------- */
+  --color-background: #0b0f14; /* Page background */
+  --color-foreground: #e5e7eb; /* Primary text */
+
+  --color-card: #121826; /* Cards, panels */
+  --color-card-foreground: #e5e7eb;
+
+  --color-surface-2: #111827; /* Secondary surfaces */
+
+  --color-muted: #111827;
+  --color-muted-foreground: #9ca3af;
+
+  --color-border: #1f2937;
+  --color-input: #1f2937;
+  --color-ring: #60a5fa; /* Brighter focus ring */
+
+  /* ---------- BRAND / TRUST BLUE ---------- */
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-primary-foreground: #0b0f14;
+
+  --color-primary-subtle: #172554;
+  --color-primary-subtle-foreground: #93c5fd;
+
+  /* ---------- JACKPOT / CTA GOLD ---------- */
+  --color-accent: #fbbf24;
+  --color-accent-hover: #facc15;
+  --color-accent-foreground: #0b0f14;
+
+  /* ---------- SEMANTIC STATES ---------- */
+  --color-success: #4ade80;
+  --color-success-foreground: #052e16;
+  --color-success-subtle: #052e16;
+  --color-success-subtle-foreground: #4ade80;
+
+  --color-warning: #fbbf24;
+  --color-warning-foreground: #451a03;
+  --color-warning-subtle: #451a03;
+  --color-warning-subtle-foreground: #fbbf24;
+
+  --color-danger: #f87171;
+  --color-danger-foreground: #450a0a;
+  --color-danger-subtle: #450a0a;
+  --color-danger-subtle-foreground: #f87171;
+}
+
+/* ---------- BASE STYLES ---------- */
+@layer base {
+  html,
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+}

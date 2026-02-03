@@ -1,0 +1,723 @@
+{
+  "authoritativeness": {
+    "priority": "highest",
+    "description": "This file is the single authoritative contract for Codex CLI behavior for the Bulletproof React Frontend. If any other document, rule file, or comment conflicts with this file, THIS FILE WINS.",
+    "conflictResolutionOrder": [
+      "codex.rules.json",
+      "frontend.rules.json",
+      "design-system.md",
+      "testing.md",
+      "frontend-plan.md",
+      "inline comments"
+    ]
+  },
+
+  "name": "bulletproof-react",
+  "description": "Enterprise-grade frontend coding rules for the Bulletproof React frontend core (React 19 + Vite).",
+  "language": "typescript",
+
+  "runtime": {
+    "framework": "react",
+    "reactVersion": "19",
+    "bundler": "vite",
+    "spaOnly": true,
+    "esmOnly": true,
+    "noSSR": true
+  },
+
+  "tooling": {
+    "packageManager": "npm",
+    "noMonorepoAssumptions": true,
+    "node": ">=24",
+    "typescript": "strict"
+  },
+
+  "responseGuidelines": {
+    "style": "senior-engineer",
+    "structure": "clear-and-sectioned",
+    "verbosity": "concise",
+    "mustInclude": [
+      "folder-structure-when-relevant",
+      "cli-steps-when-implementing",
+      "typescript-first-examples"
+    ],
+    "notes": "Only include these when the task involves implementation; review-only tasks may omit them."
+  },
+
+  "architecture": {
+    "featureFirst": true,
+    "domainOriented": true,
+    "backendIsSourceOfTruth": true,
+    "frontendNeverOwnsBusinessRules": true,
+    "apiStyle": "rest-json",
+    "rulesPriority": "architecture-over-convenience",
+
+    "srcTopLevel": {
+      "allowed": [
+        "app",
+        "pages",
+        "features",
+        "shared",
+        "assets",
+        "styles",
+        "i18n"
+      ],
+      "forbidden": [
+        "components",
+        "hooks",
+        "services",
+        "contexts",
+        "schemas",
+        "stores",
+        "utils",
+        "lib"
+      ]
+    },
+
+    "boundaries": {
+      "rules": [
+        "features/** is domain code. Keep UI, state, and API wiring local to each feature where possible.",
+        "shared/** is cross-feature infrastructure only (ui primitives, api client, validation helpers, routing glue, env access, design tokens).",
+        "UI frameworks, component kits, and infra must live in shared/** and must not live in features/**.",
+        "Documentation-only examples must live in docs/ and must not be modeled as features.",
+        "pages/** is route composition only (compose features, layout, route params). Pages must not own business rules.",
+        "app/** is app shell only (router, providers, bootstrapping). Keep it boring."
+      ]
+    }
+  },
+
+  "namingConventions": {
+    "description": "Mandatory file, folder, component, and hook naming conventions. These rules are binding for all Codex-generated plans and implementations.",
+    "reactComponents": {
+      "rules": [
+        "React components MUST be named in PascalCase.",
+        "Files exporting a React component MUST use PascalCase filenames.",
+        "The exported component name MUST match the file name."
+      ],
+      "examples": [
+        "LoginPage.tsx exports `export function LoginPage()`",
+        "ThemeSwitcher.tsx exports `export function ThemeSwitcher()`"
+      ],
+      "forbidden": [
+        "kebab-case React component filenames",
+        "camelCase React component filenames",
+        "mismatched component and file names"
+      ]
+    },
+    "customHooks": {
+      "rules": [
+        "Custom hooks MUST start with `use`.",
+        "Custom hooks MUST be named in camelCase.",
+        "Hook file names MUST match the hook name.",
+        "Hooks MAY use .ts or .tsx depending on JSX usage."
+      ],
+      "examples": [
+        "useCurrentUser.ts",
+        "useAuthorization.ts",
+        "useTheme.tsx (only if JSX is used)"
+      ],
+      "forbidden": [
+        "Hooks not prefixed with `use`",
+        "PascalCase hook names",
+        "kebab-case hook filenames"
+      ]
+    },
+    "nonReactFiles": {
+      "rules": [
+        "Non-React, non-hook files SHOULD use kebab-case.",
+        "Applies to API adapters, contracts, validators, helpers, adapters, and configuration modules."
+      ],
+      "examples": [
+        "auth.contracts.ts",
+        "query-keys.ts",
+        "api.client.ts",
+        "advanced-select.adapter.ts"
+      ],
+      "allowed": [
+        "camelCase filenames ONLY when colocated inside a feature and tightly coupled to React logic"
+      ]
+    },
+    "folders": {
+      "rules": [
+        "Folder names MUST use kebab-case.",
+        "Folder names MUST reflect semantic purpose, not technical role."
+      ],
+      "examples": [
+        "features/auth",
+        "features/dashboard",
+        "shared/ui/preline",
+        "shared/config"
+      ],
+      "forbidden": [
+        "PascalCase folders",
+        "camelCase folders",
+        "generic technical dumping grounds"
+      ]
+    },
+    "exports": {
+      "rules": [
+        "Named exports are the default.",
+        "Default exports are allowed ONLY when the file exports exactly one React component and the component name matches the file name."
+      ],
+      "forbidden": [
+        "Anonymous default exports",
+        "Multiple unrelated exports from a React component file"
+      ]
+    },
+    "explicitlyNotEnforced": [
+      "Do NOT enforce kebab-case for React component files.",
+      "Do NOT enforce PascalCase for all files.",
+      "Do NOT apply one naming style globally without semantic context."
+    ],
+    "conflictResolution": "If a common React ecosystem naming convention conflicts with these rules, STOP and ask for clarification. Do not silently adapt or downgrade enforcement."
+  },
+
+  "typescript": {
+    "strict": true,
+    "noAny": true,
+    "noTsIgnore": true,
+    "noUnknown": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "notes": [
+      "Prefer explicit types only at boundaries (API, storage, component props for shared primitives).",
+      "Inside a feature, prefer inference from schemas and typed APIs."
+    ]
+  },
+
+  "typeOwnership": {
+    "description": "Frontend domain and API-visible types must be owned by Zod schemas or explicit domain types. Do not let UI component prop shapes become the owner of domain models.",
+    "rules": [
+      "API request/response types MUST be derived from schemas (z.input/z.output) or generated types (if adopted later).",
+      "Do not define API response shapes directly as TS interfaces in UI layers.",
+      "Feature DTOs must live in the feature (or shared validators if reused across features).",
+      "Shared UI primitives must not import feature-level domain types."
+    ],
+    "forbiddenUsage": [
+      {
+        "pattern": "Parameters<typeof *>",
+        "when": "Used to define API contracts, domain entities, or persisted shapes"
+      },
+      {
+        "pattern": "ReturnType<typeof *>",
+        "when": "Used to define API contracts, domain entities, or persisted shapes"
+      }
+    ],
+    "preferredSources": [
+      "z.input<typeof Schema>",
+      "z.output<typeof Schema>",
+      "Explicit domain types",
+      "Typed API client return types"
+    ]
+  },
+
+  "environmentAccess": {
+    "description": "Environment access must be centralized to prevent inconsistent build-time/runtime assumptions.",
+    "rules": [
+      "Frontend code MUST NOT access import.meta.env directly outside src/shared/config/env.ts (or equivalent).",
+      "All env values must be validated/coerced once and exported as a typed object.",
+      "Do not read env values inside components except through the shared env module."
+    ]
+  },
+
+  "dataFetching": {
+    "library": "tanstack-react-query",
+    "rules": [
+      "React Query is the only allowed async server-state layer.",
+      "Queries must be deterministic and keyed by stable inputs.",
+      "Mutations must define success/error callbacks for UI feedback (toasts) when relevant.",
+      "Do not trigger toasts from query functions or shared services."
+    ],
+    "reactQueryPlacement": {
+      "description": "Rules governing where React Query queries and mutations must live to preserve feature ownership and prevent accidental global coupling.",
+      "rules": [
+        "React Query query and mutation hooks MUST live inside the feature they belong to by default.",
+        "If a query or mutation is used by exactly one feature, it MUST live under that feature (for example: features/<feature>/hooks/...).",
+        "Queries and mutations MUST NOT be placed in shared/** unless they are genuinely cross-feature and reused by multiple independent features.",
+        "Shared React Query hooks are allowed ONLY when reuse across features is intentional, documented, and unavoidable.",
+        "Do NOT move a query or mutation to shared/** solely to reduce duplication."
+      ],
+      "featureLocalRules": [
+        "Feature-local React Query hooks may assume feature-specific semantics.",
+        "Feature-local hooks may import feature-local schemas and types.",
+        "Feature-local hooks must not depend on other features."
+      ],
+      "sharedRules": [
+        "Shared React Query hooks must be domain-agnostic and infrastructure-like.",
+        "Shared hooks must not encode feature-specific assumptions, UI logic, or permission rules.",
+        "Shared hooks must have stable, explicit query keys and parameters.",
+        "Shared hooks must not silently update unrelated caches."
+      ],
+      "forbiddenPatterns": [
+        "Placing React Query hooks in shared/** when they are used by only one feature.",
+        "Centralized 'api hooks' layers that erase feature ownership.",
+        "Generic wrapper hooks around useQuery or useMutation that add no semantic meaning.",
+        "Moving queries to shared/** without explicit justification."
+      ],
+      "reviewGuidance": [
+        "If ownership is unclear, the hook MUST remain feature-local.",
+        "If reuse is speculative or hypothetical, the hook MUST remain feature-local.",
+        "Escalate to shared/** only after duplication across features is proven.",
+        "Reviewers MUST require explicit justification when approving shared React Query hooks."
+      ]
+    }
+  },
+
+  "apiLayer": {
+    "description": "Authoritative API layer architecture for the Bulletproof React frontend core.",
+    "singleClientRule": [
+      "The frontend MUST use a single shared HTTP client.",
+      "Do NOT create ad-hoc fetch or Axios instances inside features or components.",
+      "All requests must flow through the shared client for credentials, interceptors, and error normalization."
+    ],
+    "featureOwnership": [
+      "API request definitions MUST be feature-local by default (features/<feature>/api/**).",
+      "API logic MUST NOT be centralized into a global services layer.",
+      "shared/** may contain only API infrastructure (client, helpers), never feature-specific endpoints."
+    ],
+    "reactQueryOnlyConsumer": [
+      "React Query is the ONLY allowed consumer of API calls.",
+      "Components MUST NOT call API functions directly.",
+      "API functions MUST be invoked via queries or mutations."
+    ],
+    "contractsAndValidation": [
+      "Zod v4 schemas are the single source of truth for API contracts.",
+      "External types MUST be derived via z.input<typeof Schema> and z.output<typeof Schema>.",
+      "Handwritten API request/response interfaces in UI code are forbidden.",
+      "Zod v3-style APIs are forbidden."
+    ],
+    "errorHandling": [
+      "The API layer normalizes errors but must not trigger toasts, redirect, or mutate application state.",
+      "Errors are surfaced to features via React Query."
+    ],
+    "responseShapeAssumptions": [
+      "Frontend MUST support both envelope-based errors and HTTP status-code-based errors.",
+      "Frontend MUST NOT assume universal envelope usage."
+    ],
+    "antiPatterns": [
+      "Centralized API service layers that erase feature ownership.",
+      "Mirroring React Query results into other state.",
+      "Calling API functions from components.",
+      "Feature logic inside shared/** API infrastructure."
+    ]
+  },
+
+  "stateManagement": {
+    "description": "Authoritative state ownership and global state policy for the Bulletproof React frontend core.",
+    "ownershipMatrix": [
+      "React Query owns all server-derived state (including authenticated User | null).",
+      "React Hook Form owns all form state.",
+      "React local state owns UI and interaction state only.",
+      "URL state belongs in React Router (params/search) and pages/** wiring.",
+      "Context is allowed only for minimal app-level UI state (theme, i18n, feature flags) and must not store server-derived data or duplicate React Query cache."
+    ],
+    "globalStateLibraries": {
+      "defaultPolicy": "forbidden",
+      "forbiddenByDefault": [
+        "Redux Toolkit",
+        "Zustand",
+        "MobX",
+        "Jotai",
+        "Recoil",
+        "XState"
+      ],
+      "approvalRequired": true,
+      "approvalNotes": [
+        "Adding any state management library is an architecture decision and requires explicit approval.",
+        "Never introduce a state library to mirror or re-cache React Query results."
+      ]
+    },
+    "antiPatterns": [
+      "Duplicating React Query results into context, a store, or useState for global access.",
+      "Treating JWTs or tokens as frontend state (no persistent token storage).",
+      "Persisting access or refresh tokens in localStorage or sessionStorage.",
+      "Building global stores under shared/** as cross-feature dumping grounds.",
+      "Using shared/** to own feature domain state."
+    ]
+  },
+
+  "validation": {
+    "library": "zod",
+    "version": "4+",
+    "mentalModel": [
+      "Frontend validation is advisory and UX-focused; backend validation always wins.",
+      "Validate only at boundaries: inbound API data, outbound API payloads, and user-entered forms at submit boundaries.",
+      "Trust validated data internally (post-parse)."
+    ],
+    "rules": [
+      "All API inputs and outputs MUST be validated with Zod at the boundary layer (API client or feature boundary).",
+      "Do not sprinkle parse calls throughout the UI tree.",
+      "Empty schemas (z.object({})) are forbidden unless explicitly justified by comment.",
+      "Zod v3-era APIs are forbidden, even if still supported by Zod v4.",
+      "Use Zod v4-native APIs only (for example: z.email(), z.uuid(), z.url()).",
+      "Do not use deprecated message configuration; use { error: ... } exclusively."
+    ],
+    "allowLooseSchemasOnlyWithComment": true,
+    "commentFormat": "DEFERRED (Phase X): Validation intentionally loose."
+  },
+
+  "imports": {
+    "runtimeRequiresJsExtension": true,
+    "noCommonJs": true,
+    "noExtensionlessRuntimeImports": true,
+    "notes": [
+      "The .js extension requirement applies to backend/runtime ESM modules executed by Node.js only.",
+      "Frontend TypeScript source (Vite/React) intentionally uses extensionless imports and is exempt."
+    ],
+    "rules": [
+      "ESM import paths must include .js at runtime boundaries where required by your build output conventions.",
+      "Type-only imports must use `import type` consistently.",
+      "Avoid barrel exports that create cycles; prefer explicit exports for stable surfaces."
+    ]
+  },
+
+  "styling": {
+    "library": "tailwindcss",
+    "version": "4+",
+    "darkMode": "class",
+    "noCssInJs": true
+  },
+
+  "tailwind": {
+    "version": "4+",
+    "cssFirstRequired": true,
+    "themeTokens": {
+      "sourceOfTruth": "@theme",
+      "requiredFor": [
+        "colors",
+        "spacing",
+        "fonts",
+        "radii",
+        "shadows",
+        "breakpoints"
+      ],
+      "rootOnlyForNonUtilityVars": true,
+      "noThemeBlocksNested": true
+    },
+    "classNames": {
+      "noDynamicConstruction": true,
+      "propsMustMapToStaticClasses": true,
+      "noTemplateConcatenation": true
+    },
+    "legacyPatternsForbidden": [
+      "theme() function usage",
+      "tailwind.config.js token definitions",
+      "theme.extend",
+      "safelist",
+      "corePlugins"
+    ],
+    "canonicalUtilities": {
+      "rules": [
+        "If a value is defined in @theme, it MUST be consumed via its generated utility class (e.g. bg-background).",
+        "Arbitrary values referencing @theme CSS variables are FORBIDDEN.",
+        "Arbitrary variable syntax (e.g. bg-(--var)) is allowed ONLY for variables NOT defined in @theme.",
+        "bg-[var(--color-*)], text-[var(--color-*)], border-[var(--color-*)] are forbidden patterns."
+      ]
+    }
+  },
+
+  "designSystem": {
+    "colors": {
+      "sourceOfTruth": "src/styles/index.css",
+      "resolutionModel": "css-variables-only",
+      "requiredSemanticTokens": [
+        "--color-background",
+        "--color-foreground",
+        "--color-card",
+        "--color-border",
+        "--color-input",
+        "--color-primary",
+        "--color-accent",
+        "--color-success",
+        "--color-success-subtle",
+        "--color-warning",
+        "--color-warning-subtle",
+        "--color-danger",
+        "--color-danger-subtle"
+      ],
+      "rules": [
+        "UI MUST resolve colors via CSS variables.",
+        "Tailwind palette utilities are forbidden for product colors (no bg-blue-*, text-slate-*, etc for brand/system colors).",
+        "Dark mode is resolved via variables only.",
+        "No dark:* Tailwind color utilities for semantic colors."
+      ]
+    }
+  },
+
+  "prelineUi": {
+    "rules": {
+      "prelineIsMarkupFirst": true,
+      "markupOnlyAllowedEverywhere": true,
+      "jsPoweredForbiddenByDefault": true,
+      "examplesMustLiveInDocs": true,
+      "jsPoweredMust": [
+        "live in src/shared/ui/preline",
+        "be wrapped in React",
+        "initialize in useEffect",
+        "cleanup on unmount",
+        "never rely on global autoInit"
+      ],
+      "prelineMustNot": [
+        "own application state",
+        "fetch data",
+        "run in loaders or queries",
+        "run globally"
+      ],
+      "reactIsSingleSourceOfTruth": true
+    }
+  },
+
+  "notifications": {
+    "library": "react-hot-toast",
+    "rules": {
+      "notificationsAreUiEffectsOnly": true,
+      "mustNotInfluenceState": true,
+      "allowedSources": [
+        "react-query mutation callbacks",
+        "route actions",
+        "explicit user interactions"
+      ],
+      "forbiddenSources": [
+        "loaders",
+        "queries",
+        "middleware",
+        "shared services"
+      ]
+    }
+  },
+
+  "authErrorUx": {
+    "description": "Rules that preserve the current auth error UX split between user-correctable errors and system failures.",
+    "rules": [
+      "Credential and login form errors MUST be shown inline in the form UI.",
+      "Credential and login form errors MUST NOT trigger toast notifications.",
+      "Unexpected or system-level auth failures MAY trigger a toast and redirect.",
+      "Auth error UX MUST NOT be centralized into global error handlers."
+    ]
+  },
+
+  "apiErrorEnvelope": {
+    "description": "The frontend supports both envelope-based and status-code-based error responses.",
+    "rules": [
+      "Do NOT assume every endpoint returns { success: false, message, code }.",
+      "Infrastructure may normalize envelope errors but MUST NOT interpret business intent.",
+      "Frontend logic MUST work with both envelope-based and status-code-based errors."
+    ]
+  },
+
+  "authRoutingGuards": {
+    "description": "Guardrails for authentication vs authorization in routing.",
+    "rules": [
+      "Only ONE redirect-capable auth guard may exist per subtree.",
+      "ProtectedRoute is authentication-only and must use the layout route pattern.",
+      "ProtectedRoute MUST NOT perform role or permission checks.",
+      "RoleGuard and PermissionGuard are render-only and MUST NOT redirect.",
+      "Do NOT nest redirecting guards."
+    ]
+  },
+
+  "testing": {
+    "testingLibraries": {
+      "runner": {
+        "allowed": ["vitest"],
+        "forbidden": ["jest", "mocha", "ava"]
+      },
+
+      "componentTesting": {
+        "allowed": ["@testing-library/react"],
+        "forbidden": [
+          "enzyme",
+          "react-test-renderer",
+          "@testing-library/dom",
+          "@testing-library/react-hooks"
+        ]
+      },
+
+      "userInteraction": {
+        "allowed": ["@testing-library/user-event"],
+        "forbidden": ["fireEvent", "custom event dispatch helpers"],
+        "rules": [
+          "Prefer user-event over fireEvent to reflect real user interactions."
+        ]
+      },
+
+      "networkMocking": {
+        "allowed": ["msw"],
+        "forbidden": [
+          "jest.mock for HTTP",
+          "vi.mock for HTTP",
+          "fetch mocks",
+          "axios mocks",
+          "nock",
+          "sinon fake servers"
+        ],
+        "rules": [
+          "All HTTP mocking MUST use MSW.",
+          "MSW handlers MUST reflect real backend contracts.",
+          "MSW MUST fail on unhandled requests."
+        ]
+      }
+    },
+    "domEnvironment": "jsdom",
+    "notes": [
+      "jsdom is the canonical DOM environment for frontend tests.",
+      "happy-dom is intentionally NOT enabled by default.",
+      "Changing the DOM environment requires explicit architectural approval and documentation updates."
+    ],
+    "principles": [
+      "Tests MUST verify user-visible behavior.",
+      "Integration tests are the DEFAULT for frontend confidence.",
+      "Unit tests are LIMITED to pure, deterministic logic only."
+    ],
+
+    "placement": {
+      "rules": [
+        "Tests MUST be colocated next to the file they verify.",
+        "Tests MUST live under src/** only.",
+        "__tests__ directories are FORBIDDEN anywhere in the repository.",
+        "Global or centralized test dumping grounds are FORBIDDEN.",
+        "Cross-feature imports inside tests are FORBIDDEN."
+      ],
+      "allowedPatterns": [
+        "src/features/**/**/*.test.ts",
+        "src/features/**/**/*.test.tsx",
+        "src/features/**/**/*.spec.ts",
+        "src/features/**/**/*.spec.tsx",
+        "src/shared/**/**/*.test.ts",
+        "src/shared/**/**/*.test.tsx",
+        "src/pages/**/**/*.test.tsx",
+        "src/app/**/**/*.test.tsx"
+      ],
+      "forbiddenPatterns": [
+        "**/__tests__/**",
+        "**/*.tests.ts",
+        "**/*.testing.ts",
+        "**/*.specification.ts"
+      ]
+    },
+
+    "fileNaming": {
+      "allowedExtensions": [".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"],
+      "rules": [
+        "Test filenames MUST use one of the allowed extensions exactly.",
+        "Ad-hoc or invented test suffixes are FORBIDDEN."
+      ]
+    },
+
+    "testTypes": {
+      "unit": {
+        "allowedOnlyFor": [
+          "Pure helper functions",
+          "Pure data transformations",
+          "Deterministic formatters"
+        ],
+        "forbidden": [
+          "React rendering",
+          "DOM usage",
+          "Network access",
+          "Browser APIs"
+        ]
+      },
+
+      "integration": {
+        "default": true,
+        "rules": [
+          "Any test involving React components, hooks, user interaction, React Query, or HTTP is an integration test.",
+          "Integration tests MUST assert behavior, not implementation details."
+        ]
+      }
+    },
+
+    "reactQuery": {
+      "rules": [
+        "Tests involving React Query MUST use the shared test QueryClient from src/shared/test/**.",
+        "A fresh QueryClient MUST be created per test.",
+        "React Query retries MUST be disabled in tests.",
+        "Tests MUST NOT mock React Query internals.",
+        "Tests MUST NOT create ad-hoc QueryClient instances."
+      ]
+    },
+    "testSetup": {
+      "rules": [
+        "All tests MUST rely on the shared test setup wired in vitest.config.ts.",
+        "Tests MUST NOT reconfigure MSW lifecycle (listen/reset/close) locally.",
+        "Tests MUST NOT add global beforeAll/afterAll hooks for infra concerns.",
+        "Shared test setup is the single owner of test lifecycle wiring."
+      ]
+    },
+    "networkMocking": {
+      "library": "msw",
+      "rules": [
+        "ALL HTTP mocking MUST use MSW.",
+        "Direct mocking of fetch, axios, or API modules is FORBIDDEN.",
+        "MSW infrastructure MUST live under src/shared/test/msw/** only.",
+        "MSW MUST fail tests on unhandled requests.",
+        "Feature tests MUST register handlers explicitly using server.use(...).",
+        "Default or global MSW handlers are FORBIDDEN.",
+        "MSW MUST NOT be used as a fake backend with divergent behavior."
+      ]
+    },
+
+    "mocking": {
+      "allowed": [
+        "Network (MSW)",
+        "Time (fake timers)",
+        "Browser APIs when missing from the environment",
+        "Storage APIs when required"
+      ],
+      "forbidden": [
+        "React Query",
+        "Feature logic",
+        "Internal modules for convenience",
+        "API modules as mocks"
+      ],
+      "rules": [
+        "Mocks MUST be cleared or restored between tests.",
+        "Mocks MUST NOT leak state across tests."
+      ]
+    },
+
+    "assertions": {
+      "rules": [
+        "Use @testing-library/react and @testing-library/user-event.",
+        "Prefer queries by role, label, and visible text.",
+        "Assertions against Tailwind class names are FORBIDDEN.",
+        "Implementation-detail assertions are FORBIDDEN."
+      ]
+    },
+
+    "snapshots": {
+      "rules": [
+        "Snapshotting entire React trees is FORBIDDEN.",
+        "Snapshots are allowed only for small, stable, human-reviewable outputs.",
+        "Prefer explicit assertions over snapshots.",
+        "Use file snapshots for HTML, SVG, or JSON when appropriate."
+      ]
+    }
+  },
+  "aiBehavior": {
+    "mustRespectExistingArchitecture": true,
+    "mustAskBeforeArchitectureChanges": true,
+    "mustProduceCopyPasteReadyCode": true,
+    "mustNotDowngradeStrictness": true,
+    "mustExplainDeferredDecisions": true,
+    "mustAvoidGamblingLanguage": true,
+    "mustNotInventBackgroundJobs": true,
+
+    "planOnlyCompliance": {
+      "description": "When the user requests PLAN ONLY, output must contain only the requested plan sections.",
+      "rules": [
+        "Do not include summaries, reviews, strengths/issues, conclusions, or readiness judgments.",
+        "Do not output code, file edits, or implementation steps.",
+        "Do not include any content outside the specified PLAN format."
+      ]
+    },
+
+    "documentationDiscipline": {
+      "description": "Structural refactors that change documented module layout must update documentation unless explicitly forbidden.",
+      "requiredDocs": ["frontend-plan.md", "testing.md", "design-system.md"],
+      "exception": "If the user explicitly forbids documentation updates, do not modify docs."
+    }
+  }
+}

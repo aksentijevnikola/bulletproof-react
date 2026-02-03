@@ -1,0 +1,104 @@
+{
+  "app": {
+    "title": "Accounting Application",
+    "subtitle": "Manage your invoices and financial data"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "dashboard": {
+    "welcome": "Welcome back!",
+    "totalInvoices": "Total Invoices",
+    "totalRevenue": "Total Revenue",
+    "pendingInvoices": "Pending Invoices",
+    "recentActivity": "Recent Activity",
+    "noData": "No data available"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "addNew": "Add New Invoice",
+    "editInvoice": "Edit Invoice",
+    "deleteInvoice": "Delete Invoice",
+    "viewInvoice": "View Invoice",
+    "invoiceNumber": "Invoice Number",
+    "clientName": "Client Name",
+    "amount": "Amount",
+    "date": "Date",
+    "status": "Status",
+    "description": "Description",
+    "dueDate": "Due Date",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "statuses": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "overdue": "Overdue"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "tableHeaders": {
+      "invoiceNumber": "Invoice #",
+      "clientName": "Client",
+      "amount": "Amount",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "noInvoices": "No invoices found"
+  },
+  "forms": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "loading": "Loading...",
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email",
+    "validationError": "Please correct the errors below"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "error": "Login failed. Please check your credentials."
+    },
+    "unauthorized": "You are not authorized to access this page.",
+    "protected": "This page requires authentication."
+  },
+  "common": {
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "page": "Page",
+    "of": "of",
+    "items": "items",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Operation completed successfully",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "hungarian": "Hungarian"
+  },
+  "currency": {
+    "symbol": "€",
+    "name": "Euro"
+  }
+}
