@@ -12,7 +12,7 @@ export default defineConfig([
   // --------------------------------------------------
   // Global ignores
   // --------------------------------------------------
-  globalIgnores(["dist", "node_modules"]),
+  globalIgnores(["dist", "node_modules", "coverage"]),
 
   // ==================================================
   // Base application rules
@@ -137,9 +137,12 @@ export default defineConfig([
                 "Deep imports into features are forbidden. Import from the feature index only.",
             },
             {
-              group: ["@/features/preline", "@/features/preline/**"],
+              group: [
+                "@/features/third-party-ui",
+                "@/features/third-party-ui/**",
+              ],
               message:
-                "Preline infrastructure and examples must live in shared/** or docs/, not features/**.",
+                "Third-party UI infrastructure and examples must live in shared/** or docs/, not features/**.",
             },
             {
               group: [
@@ -158,6 +161,26 @@ export default defineConfig([
           ],
         },
       ],
+    },
+  },
+
+  // --------------------------------------------------
+  // React Compiler: allow TanStack Table wrapper
+  // --------------------------------------------------
+  {
+    files: ["src/shared/ui/data-table/DataTable.tsx"],
+    rules: {
+      "react-hooks/incompatible-library": "off",
+    },
+  },
+
+  // --------------------------------------------------
+  // Generated shadcn registry files can export helpers
+  // --------------------------------------------------
+  {
+    files: ["src/shared/ui/shadcn/ui/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 

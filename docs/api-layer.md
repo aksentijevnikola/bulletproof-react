@@ -1,77 +1,85 @@
-﻿# API Layer
+# API Layer
 
-Canonical reference for how the Bulletproof React frontend core talks to the backend.
+Canonical reference for how the Bulletproof React frontend talks to backend APIs.
+
 This document is descriptive; enforceable rules live in `.codex/codex.rules.json`.
 
 ## 1) Purpose
 
-Define the current API-layer architecture and ownership boundaries for the
-frontend. Backend remains the source of truth for business rules and validation.
+Define API-layer ownership boundaries and request/response handling conventions.
 
 ## 2) Core Principles
 
 - Backend owns business logic and validation truth.
-- Frontend consumes APIs declaratively through React Query.
-- Avoid duplicated sources of truth.
-- Prefer feature ownership over centralization.
+- Frontend consumes APIs through React Query.
+- Feature ownership beats centralization.
 
-## 3) What We Use Today (Authoritative)
+## 3) Current Model
 
-- A single shared HTTP client (Axios) in shared infrastructure.
+- Single shared HTTP client (Axios) in shared infrastructure.
 - Feature-local API modules under `features/<feature>/api/**`.
-- React Query for all server interactions.
+- React Query as the API consumer layer.
 - Zod v4 schemas as contract owners.
-- Error normalization at the client layer.
+- Shared client normalizes transport-level errors.
 
-## 4) API Request Flow
+## 4) Request Flow
 
-1. Feature defines the API contract using Zod v4 schemas.
-2. Feature defines API request functions in `features/<feature>/api/**`.
-3. React Query queries/mutations invoke those functions.
-4. UI consumes React Query state (data, error, loading).
+1. Feature defines contract schemas.
+2. Feature defines request modules.
+3. Query/mutation hooks call those modules.
+4. UI consumes query/mutation state.
 
-Components are not expected to call API functions directly in the current architecture.
+Components should not call API modules directly.
 
 ## 5) Contracts & Validation
 
-- Zod v4 schemas are authoritative for API contracts.
-- External types are derived via:
-  - `z.input<typeof Schema>`
-  - `z.output<typeof Schema>`
-- Handwritten API request/response interfaces in UI code are not used in the current architecture.
-- Zod v3-style APIs are not used in the current architecture.
-- See docs/state-management.md for ownership rules.
+- Contract types derive from Zod (`z.input` / `z.output`).
+- No handwritten API DTO interfaces in UI layers.
+- Naming convention:
+  - `NamePayload` for `z.input<typeof Schema>`
+  - `NameResponse` for `z.output<typeof Schema>`
 
-## 6) Error Handling Model
+## 6) Error Handling
 
-- The shared HTTP client normalizes errors into a stable shape.
-- The API layer does not trigger toasts, redirects, or state changes.
-- Features handle UX in React Query callbacks and UI.
-- The client supports both envelope-based errors and HTTP status-code errors.
-- The API layer does not interpret business intent from errors.
+- Client normalizes transport errors into a stable shape.
+- API modules do not trigger toasts/redirects.
+- UI decides presentation (inline, toast, redirect) at feature boundaries.
+- Client supports both envelope-based and status-based error contracts.
 
-## 7) What We Explicitly Do NOT Do
+## 7) Anti-Patterns
 
-- No global API services layer that erases feature ownership.
-- No API calls in React components.
-- No server data stored outside React Query.
-- No assumptions that every response uses an envelope.
+- Global API service layer that hides feature ownership.
+- API calls directly in components.
+- Duplicate server state outside React Query.
+- Assuming every endpoint uses the same error envelope.
 
-## 8) When This Model Might Change
+## 8) Related Docs
 
-Rare, explicit architecture decisions may adjust the model, such as:
-
-- GraphQL adoption
-- Generated API clients from backend schemas
-- Streaming APIs (SSE/websocket)
-- Backend contract changes that require new client behavior
-
-Any such change requires explicit approval and documentation updates.
-
-## 9) Related Docs
-
-- `docs/roadmap.md`
+- `docs/project-structure.md`
 - `docs/state-management.md`
 - `docs/security.md`
-- `docs/security.md` (Backend Auth Contract section)
+- `docs/error-handling.md`
 - `docs/testing.md`
+
+## 9) Canonical Server-Driven Table Query Params
+
+For server-driven tables (manual mode + React Query), URL search params are the source of truth.
+
+Canonical params:
+
+- `page`: number, 0-indexed
+- `pageSize`: number, default 20
+- `q`: optional search string
+- `searchBy`: `"all"` or field key
+- `sort`: delimited sort expression, e.g. `createdAt:desc`
+- Filters: explicit field params, e.g. `status=active`
+
+Canonical response fields:
+
+- `data`
+- `totalResults`
+- `page`
+- `pageSize`
+- `pageCount` (optional)
+
+When filters/search/sort/pageSize change, reset `page` to `0`.

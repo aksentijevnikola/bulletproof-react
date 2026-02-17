@@ -1,1 +1,1 @@
-export { default as DashboardPage } from "./ui/DashboardPage";
+export { default as DashboardPage } from "./ui/pages/DashboardPage";

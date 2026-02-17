@@ -1,6 +1,17 @@
 {
   "intent": "Enterprise-grade, feature-first frontend core for Bulletproof React applications (React 19 + Vite SPA).",
 
+  "currentProjectSetup": {
+    "routing": "react-router-dom@7",
+    "serverState": "@tanstack/react-query@5",
+    "forms": "react-hook-form",
+    "validation": "zod@4",
+    "httpClient": "axios",
+    "urlState": "nuqs",
+    "i18n": "i18next",
+    "ui": "feature-owned UI with minimal shared primitives (no MUI dependency)"
+  },
+
   "scope": {
     "appliesTo": ["src/**"],
     "nonGoals": [
@@ -89,6 +100,28 @@
     ]
   },
 
+  "accessibilityBaseline": {
+    "description": "Minimal accessibility baseline enforced for frontend implementation and scoped reviews.",
+    "required": [
+      "Use semantic interactive elements: button, a, input, select, textarea, label, table, th.",
+      "Ensure keyboard operability for all interactive controls.",
+      "Preserve visible focus; do not suppress with focus:outline-none, focus:ring-0, or focus:shadow-none.",
+      "Set correct button type attributes and aria-label on icon-only buttons.",
+      "Set aria-current=\"page\" on active pagination buttons.",
+      "Set explicit aria-label values on Previous/Next pagination controls.",
+      "Expose accurate aria-sort on sortable table headers.",
+      "Ensure checkbox controls have accessible labels with clear scope."
+    ],
+    "outOfScopeByDefault": [
+      "Advanced ARIA patterns beyond baseline",
+      "ARIA live regions",
+      "Landmark role restructuring",
+      "Full WCAG audit/compliance testing",
+      "Contrast audits unless clearly broken",
+      "Screen-reader narrative tuning beyond semantic correctness"
+    ]
+  },
+
   "projectStructure": {
     "allowedSrcTopLevel": [
       "app",
@@ -140,9 +173,5 @@
       ],
       "must": ["clear/restore mocks between tests"]
     }
-  },
-
-  "preline": {
-    "usagePolicy": "See codex.rules.json — no local overrides allowed."
   }
 }

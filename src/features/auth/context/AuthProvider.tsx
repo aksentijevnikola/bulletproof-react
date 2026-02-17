@@ -2,10 +2,10 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "./auth-context";
-import { authApi } from "../api/auth.api";
+import { login as loginRequest, logout as logoutRequest } from "../api/auth.requests";
 import { authQueryKeys } from "../api/query-keys";
-import type { LoginPayload, User } from "../api/auth.contracts";
-import { useCurrentUser } from "../hooks/useCurrentUser"; // from the cleaner pattern
+import type { LoginPayload, UserResponse } from "../api/auth.contracts";
+import { useCurrentUser } from "../hooks";
 
 type AuthProviderProps = { children: ReactNode };
 
@@ -18,8 +18,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     mutateAsync: loginMutate,
     isPending: isLoginPending,
     error: loginError,
-  } = useMutation<User, Error, LoginPayload>({
-    mutationFn: authApi.login,
+  } = useMutation<UserResponse, Error, LoginPayload>({
+    mutationFn: loginRequest,
     onSuccess: (user) => {
       queryClient.setQueryData(authQueryKeys.user(), user);
     },
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     undefined
   >({
     mutationFn: async (): Promise<undefined> => {
-      await authApi.logout();
+      await logoutRequest();
       return undefined;
     },
     onSettled: () => {

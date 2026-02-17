@@ -1,58 +1,47 @@
-﻿# State Management
+# State Management
 
-Canonical state ownership and state-management policy for the Bulletproof React frontend
-core (React 19 + Vite SPA). This document is descriptive; enforceable rules live
-in `.codex/codex.rules.json`.
+Canonical state ownership and state-management policy for the Bulletproof React frontend core.
+
+This document is descriptive; enforceable rules live in `.codex/codex.rules.json`.
 
 ## 1) Purpose
 
-Define the authoritative state ownership model for the Bulletproof React frontend core,
-so new contributors understand where state lives, how it flows, and what is
-explicitly disallowed by default.
+Define where state lives, how it flows, and what is disallowed by default.
 
 ## 2) Core Principles
 
 - Backend owns business rules and validation truth.
 - Avoid duplicated sources of truth.
-- Prefer the smallest viable scope for state.
-- Deletion safety over global coupling.
+- Prefer the smallest viable state scope.
+- Preserve feature deletion safety.
 
-## 3) What We Use Today (Authoritative)
+## 3) Current Ownership Model
 
-State ownership is intentionally split by responsibility:
-
-- React Query owns server-derived state and caching (including authenticated
-  `User | null` from `GET /auth/me`).
+- React Query owns server-derived state (including authenticated `User | null`).
 - React Hook Form owns form state.
-- React local state owns UI and interaction state only.
-- React Router owns URL state (params and search) and `pages/**` wiring.
-- Context is limited to minimal UI-only cross-feature switches (theme, i18n,
-  feature flags) and does not store server-derived data.
-- Auth context is lifecycle-only; the read-only user surface (user and
-  isAuthenticated) is derived from React Query and exposed via UserContext.
+- React local state owns UI/interaction state.
+- React Router owns URL params/search with route composition in `pages/**`.
+- Context is limited to minimal cross-feature UI concerns (theme, i18n, feature flags).
+- Auth lifecycle is handled in auth providers/hooks; read-only user derivation comes from query-backed state.
 
 ### State Ownership Table
 
-| State Type                       | Owner                     | Notes                                                     |
-| -------------------------------- | ------------------------- | --------------------------------------------------------- | -------------------------------------------------------- |
-| Server-derived data              | React Query               | Cache is the source of truth; do not mirror it elsewhere. |
-| Authenticated user (`User        | null`)                    | React Query                                               | Context may read from cache but does not own user state. |
-| Form inputs, errors, dirty state | React Hook Form           | Form state never lives in global stores.                  |
-| UI/interaction state             | React local state         | Modals, tabs, toggles, hover, pagination UI.              |
-| URL params/search                | React Router + pages/\*\* | URL state stays in routing composition.                   |
-| Cross-feature UI switches        | Context                   | Theme, i18n, feature flags only; never server data.       |
+| State Type | Owner | Notes |
+| --- | --- | --- |
+| Server-derived data | React Query | Query cache is the source of truth. |
+| Authenticated user (`User \| null`) | React Query | No duplicated global user store. |
+| Form inputs/errors/dirty state | React Hook Form | Keep form state local to forms. |
+| UI interaction state | React local state | Modals, tabs, toggles, local filters. |
+| URL params/search | React Router + `pages/**` wiring | URL state remains route-driven. |
+| Cross-feature UI switches | Context | Theme/i18n/flags only; never server data. |
 
-## 4) Why We Use This Model
+## 4) Why This Model
 
-- React Query already provides caching, invalidation, and request deduplication,
-  which removes the need for a separate server-data store.
-- Global stores tend to become coupling points that block deletion and reuse.
-- Feature-local state keeps domains isolated and easier to remove.
-- A single source of truth reduces bugs from stale or conflicting data.
+- React Query already provides caching, invalidation, retries, and deduplication.
+- Global stores often become coupling points.
+- Feature-local state improves isolation and removability.
 
-## 5) What We Explicitly Do NOT Use (and Why)
-
-These libraries are not used in the core app by default:
+## 5) What We Do Not Use By Default
 
 - Redux Toolkit
 - Zustand
@@ -61,50 +50,32 @@ These libraries are not used in the core app by default:
 - Recoil
 - XState
 
-Reasons:
+Any adoption requires explicit architecture approval.
 
-- They often duplicate React Query cache or server data.
-- They encourage cross-feature coupling and global dumping grounds.
-- Governance cost is high: ownership, conventions, and migration burden.
-- They obscure where state lives and who owns it.
+## 6) When A State Library May Be Justified
 
-Using any state library requires explicit approval as an architecture decision.
+Only after feature-local state and React Query are clearly insufficient, such as:
 
-## 6) When a State Library May Be Justified (Upgrade Criteria)
-
-A state library may be justified only when feature-local state and React Query
-cannot satisfy the need. Examples:
-
-- Complex client-only workflows that need to persist across routes (not server-backed).
-- Offline drafts or local-first editing flows.
-- Large multi-step wizards with deep cross-feature coordination.
-- Real-time collaborative editing with client-side models.
-- Performance constraints that cannot be solved with feature-local state,
-  memoization, or query cache tuning.
-- Deterministic finite-state machines for critical UI flows (rare).
+- Long-lived client-only workflows spanning routes
+- Offline draft models
+- Complex deterministic state machines
 
 Non-justifications:
 
-- "I want global access to data."
-- "It is more convenient."
-- "React Query cache is annoying."
-- "We need to avoid prop drilling."
+- Convenience
+- Avoiding prop drilling by default
+- Re-caching server state outside React Query
 
-Prefer composition, feature-local context, or router state instead.
+## 7) Adoption Guardrails (If Approved)
 
-## 7) How We Would Adopt a State Library (If Approved)
-
-Guardrails for any approved adoption:
-
-- Start feature-scoped, never global-first.
-- Must never mirror or duplicate React Query results.
-- Must not live in shared/\*\* as a generic dumping ground.
-- Must include documentation updates and tests.
-- Must define explicit ownership boundaries and exit criteria.
+- Start feature-scoped, not global-first.
+- Never mirror React Query data.
+- Do not create shared dumping grounds for domain state.
+- Update docs and tests in the same change.
 
 ## 8) Related Docs
 
-- `docs/roadmap.md` (core architecture and ownership principles)
-- `docs/security.md` (Backend Auth Contract section) (auth state constraints)
-- `docs/security.md` (auth routing and guardrails)
-- `docs/testing.md` (test implications)
+- `docs/project-structure.md`
+- `docs/api-layer.md`
+- `docs/security.md`
+- `docs/testing.md`

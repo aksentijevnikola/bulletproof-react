@@ -1,4 +1,4 @@
-﻿# Performance
+# Performance
 
 ## Introduction
 
@@ -30,7 +30,7 @@ When memoization is usually not needed:
 
 - Components are small, cheap to render, or do not re-render frequently.
 - Props are already stable and there is no measurable hot path.
-- The componentпїЅs output is dominated by DOM or CSS rather than computation.
+- The component's output is dominated by DOM or CSS rather than computation.
 
 When `useMemo` or `useCallback` may be justified:
 
@@ -122,3 +122,4 @@ Performance work is justified when there is clear, user-visible impact and evide
 - `docs/state-management.md` defines the state ownership model that prevents re-render fan-out.
 - `docs/api-layer.md` defines the API access pattern that prevents duplicated caching.
 - `docs/testing.md` documents the testing model that guards against performance regressions in behavior.
+

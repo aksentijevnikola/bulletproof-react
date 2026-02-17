@@ -1,198 +1,100 @@
-﻿# Frontend Testing Architecture
+# Frontend Testing Architecture
 
-Authoritative frontend testing model for the Bulletproof React core (React 19 + Vite SPA).
-This replaces the legacy `docs/testing-plan.md` and is the single source of
-truth for testing guidance.
+Authoritative testing model for the Bulletproof React frontend core.
 
-> Enforcement notice
-> All enforceable rules live in `.codex/codex.rules.json`.
-> This document is descriptive; if there is a conflict, the Codex rules win.
+This document is descriptive. Enforceable rules live in `.codex/codex.rules.json`.
 
 ## 1) Purpose
 
-- Define a single, stable testing architecture for the frontend core.
-- Align tests with user-visible behavior and feature confidence.
-- Prevent drift and ad-hoc testing styles across features.
+- Keep test strategy consistent across features.
+- Prioritize user-visible confidence over implementation coupling.
+- Prevent ad-hoc test patterns.
 
-## 2) Core Testing Principles
+## 2) Core Principles
 
 - Behavior over implementation details.
-- Confidence over coverage.
-- Determinism over convenience (no flaky timing or network).
-- Tests are part of the architecture, not an afterthought.
+- Determinism over convenience.
+- Integration tests by default.
 
-## 3) Testing Stack (Authoritative)
+## 3) Testing Stack
 
 Required:
 
 - Vitest
 - React Testing Library
 - `@testing-library/user-event`
-- MSW (Mock Service Worker)
+- MSW
 
 Optional:
 
-- Visual regression tooling (Vitest browser mode screenshots)
-- E2E tooling (only when CI/environment readiness supports it)
+- Visual regression tooling
+- E2E tooling (only when CI/runtime constraints are satisfied)
 
-## 4) Test Types & When To Use Them
+## 4) Test Types
 
-### Unit Tests (Rare, Pure)
+### Unit Tests (Rare)
 
-Use for:
-
-- Small, deterministic helpers
-- Pure transformations and formatters
-
-Rules:
-
-- No React
-- No DOM
-- No network
-- No browser APIs
+Use for pure helpers and deterministic transformations.
 
 ### Integration Tests (Default)
 
-Use for:
-
-- Feature-level flows
-- Cross-component behavior
-- React Query + MSW scenarios
-
-Rules:
-
-- Prefer these over unit tests for product confidence
-- Assert user-visible outcomes
-- Treat the network as an external dependency (MSW)
-- Behavior-first component tests are considered integration tests here
-
-### Visual Regression Tests (Optional)
-
-Use for:
-
-- Design-critical components
-- High-risk pages and layouts
-- UI contracts that are expected to remain stable
-
-Rules:
-
-- Use visual snapshots to verify the contract
-- Review diffs like source code
-
-### E2E Tests (Optional, High Cost)
-
-Use for:
-
-- Critical flows that require full stack integration
-- Only when CI/environment readiness supports it
-
-Rules:
-
-- Not required by default
-- Avoid for routine UI verification
+Use for component/hook behavior, feature flows, and query/network interactions.
 
 ## 5) Mocking Strategy
 
-Mock only true externals:
+Mock only real externals:
 
 - Network (MSW)
-- Time (fake timers)
-- Browser APIs (only when the environment lacks them)
-- Storage APIs (only when necessary)
+- Time
+- Missing browser APIs
+- Storage APIs when needed
 
 Avoid mocking:
 
-- React Query
+- React Query internals
 - Feature logic
 - Internal modules for convenience
 
-MSW usage rules:
+MSW expectations:
 
-- Use MSW for all HTTP mocking.
-- MSW infrastructure lives under `src/shared/test/msw/**` and is wired in the shared test setup.
-- Handlers reflect real backend contracts.
-- MSW is not used as a fake backend with divergent behavior.
-- Default to failing on unhandled requests to prevent silent calls.
-- Feature tests own their handlers and must register them explicitly via `server.use(...)`.
-- Start the server in test setup, reset handlers between tests, and stop it after.
+- Shared infra under `src/shared/test/msw/**`
+- Fail on unhandled requests
+- Feature tests own handler registration via `server.use(...)`
 
-Mocking time:
-
-- Use `vi.useFakeTimers()` and `vi.setSystemTime()` for time-based logic.
-- Always return to real timers in teardown.
-
-## 6) Snapshot Rules
+## 6) Snapshot Policy
 
 Allowed:
 
-- Small, stable, human-reviewable outputs
-- File snapshots via `toMatchFileSnapshot()` for HTML/SVG/JSON
-- Visual snapshots for UI contracts
+- Small, stable, reviewable snapshots
+- File snapshots for compact HTML/SVG/JSON outputs
 
-Avoided in current practice:
+Avoid:
 
-- Snapshotting entire React trees
-- Large DOM snapshots
-- Inline snapshots for large payloads
+- Full-tree React snapshots
+- Large fragile DOM snapshots
 
-Guidance:
+## 7) Placement Rules
 
-- Prefer explicit assertions (`getByRole`, `getByText`, user interactions).
-- If a DOM snapshot is used, it is minimal and intentional.
-- In concurrent async tests, use `expect` from the local test context.
-
-## 7) Test Location & Structure
-
-Placement rules:
-
-- Tests are colocated next to the source file they verify.
-- Allowed:
+- Co-locate tests with source under `src/**`.
+- Allowed patterns:
   - `src/features/**/**/*.test.ts(x)`
   - `src/shared/**/**/*.test.ts(x)`
-  - `src/pages/**/**/*.test.ts(x)` (composition only)
-  - `src/app/**/**/*.test.ts(x)` (wiring only)
+  - `src/pages/**/**/*.test.ts(x)`
+  - `src/app/**/**/*.test.ts(x)`
 - Forbidden:
-  - `__tests__` directories anywhere
-  - Global test dumping grounds
-  - Cross-feature imports in tests
+  - `__tests__` directories
+  - cross-feature test imports
+  - global test dumping folders
 
-Shared test infrastructure:
+## 8) Coverage Philosophy
 
-- Shared, cross-feature test utilities live under `src/shared/test/**`.
-- React Query test utilities (including the test QueryClient factory) are centralized there.
-- MSW setup is centralized in shared test infrastructure; no default handlers are provided.
+Coverage is a floor, not a goal. Prefer meaningful tests for critical feature flows.
 
-## 8) CI Expectations
+## 9) Related Docs
 
-- Tests are deterministic and do not depend on real network access.
-- Visual regression tests run in CI only when the environment supports them.
-- Snapshot artifacts and screenshots are committed and reviewed.
-
-## 9) Coverage Philosophy
-
-- Do not chase vanity coverage.
-- Prefer meaningful tests for critical flows such as:
-  - Auth UI flows
-  - Purchase flows
-  - Admin actions
-  - Error handling
-  - Routing and guards
-
-## 10) What This Architecture Intentionally Avoids
-
-This architecture intentionally avoids:
-
-- Testing implementation details or internal state.
-- Mocking React Query.
-- Mocking feature logic or internal modules for convenience.
-- Snapshotting entire component trees.
-- Treating MSW as a fake backend that diverges from real contracts.
-
-## 11) Relationship To Other Architecture Docs
-
-This testing model is consistent with and constrained by:
-
-- `docs/state-management.md` (state ownership and React Query as source of truth)
-- `docs/api-layer.md` (API access via React Query; MSW for network)
-- `docs/security.md` (auth flows and guard behavior in tests)
-- `docs/roadmap.md` (feature-first architecture and responsibilities)
+- `docs/project-structure.md`
+- `docs/state-management.md`
+- `docs/api-layer.md`
+- `docs/security.md`
+- `docs/error-handling.md`
+- `docs/performance.md`

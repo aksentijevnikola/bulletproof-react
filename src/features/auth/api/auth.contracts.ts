@@ -25,7 +25,6 @@ export const logoutResponseSchema = z.object({
   success: z.boolean().optional(),
 });
 
-export type LoginFormData = z.input<typeof loginSchema>;
 export type LoginPayload = z.input<typeof loginSchema>;
-export type User = z.output<typeof userSchema>;
+export type UserResponse = z.output<typeof userSchema>;
 export type LogoutResponse = z.output<typeof logoutResponseSchema>;

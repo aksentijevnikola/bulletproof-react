@@ -7,11 +7,9 @@ const DashboardPage = () => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">
-          Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Welcome to your accounting dashboard. Here's an overview of your
+          Welcome to your accounting dashboard. Here&#39;s an overview of your
           recent activity.
         </p>
       </div>
@@ -127,54 +125,6 @@ const DashboardPage = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className={cardClassName}>
-        <div className="px-4 py-5 sm:p-6">
-          <h3 className="mb-4 text-lg font-medium leading-6 text-foreground">
-            Recent Activity
-          </h3>
-
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="shrink-0">
-                <div className="h-2 w-2 rounded-full bg-success" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm text-foreground">
-                  Invoice #INV-001 paid by Client A
-                </p>
-                <p className="text-xs text-muted-foreground">2 hours ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="shrink-0">
-                <div className="h-2 w-2 rounded-full bg-warning" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm text-foreground">
-                  Invoice #INV-002 sent to Client B
-                </p>
-                <p className="text-xs text-muted-foreground">1 day ago</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="shrink-0">
-                <div className="h-2 w-2 rounded-full bg-primary" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm text-foreground">
-                  New invoice #INV-003 created
-                </p>
-                <p className="text-xs text-muted-foreground">2 days ago</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6" />
         </div>
       </div>
     </div>

@@ -1,7 +1,11 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
-import { ThemeSwitcher } from "@features/theme";
+import type { ReactNode } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
-const Layout = () => {
+type AppShellLayoutProps = {
+  headerRight?: ReactNode;
+};
+
+const AppShellLayout = ({ headerRight }: AppShellLayoutProps) => {
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -9,12 +13,12 @@ const Layout = () => {
   };
 
   const navLinkActiveClassName =
-    "px-3 py-2 rounded-md text-sm font-medium bg-primary-subtle text-primary-subtle-foreground";
+    "px-3 py-2 rounded-md text-sm text-foreground font-medium";
   const navLinkInactiveClassName =
-    "px-3 py-2 rounded-md text-sm font-medium text-primary-foreground hover:bg-primary-hover hover:text-primary-foreground";
+    "px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-hover hover:text-primary-foreground";
 
   return (
-    <div className="min-h-screen min-w-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <header className="bg-card shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -25,9 +29,9 @@ const Layout = () => {
                 </h1>
               </div>
             </div>
-            <div className="flex items-center">
-              <ThemeSwitcher />
-            </div>
+            {headerRight ? (
+              <div className="flex items-center">{headerRight}</div>
+            ) : null}
           </div>
         </div>
       </header>
@@ -58,4 +62,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default AppShellLayout;

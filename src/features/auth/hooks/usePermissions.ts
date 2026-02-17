@@ -1,31 +1,51 @@
-import type { User } from "../api/auth.contracts";
-import { useUser } from "../context/user-context";
-import { authorizationUtils } from "./useAuthorization";
+import { useCallback, useMemo } from "react";
+import { useCurrentUser } from "./useCurrentUser";
+import {
+  hasAllPermissions as hasAllPermissionsFromSet,
+  hasAnyPermission as hasAnyPermissionFromSet,
+  hasPermission as hasPermissionFromSet,
+} from "../lib";
 
-// Custom hook to check if user has specific permission
-// Permissions are not supported in this system.
-// Authorization is role-only (user vs admin).
-export const useUserHasPermission = (permission: string): never => {
-  if (!permission) {
-    throw new Error("Permission is required");
-  }
-  throw new Error(
-    "useUserHasPermission is unsupported. This application uses role-only authorization.",
-  );
+type UsePermissionsResult = {
+  permissions: string[];
+  hasPermission: (permission: string) => boolean;
+  hasAllPermissions: (required: string[]) => boolean;
+  hasAnyPermission: (required: string[]) => boolean;
+  isLoading: boolean;
 };
 
-// Custom hook to check if user has specific role
-export const useUserHasRole = (role: User["role"]): boolean => {
-  const user = useUser();
-  return authorizationUtils.hasRole(user, role);
-};
+export const usePermissions = (): UsePermissionsResult => {
+  const { data: user, isLoading } = useCurrentUser();
+  const permissions = useMemo(() => user?.permissions ?? [], [user?.permissions]);
 
-// Custom hook to check multiple permissions (AND logic)
-export const useUserHasPermissions = (requiredPermissions: string[]): never => {
-  if (!requiredPermissions || requiredPermissions.length === 0) {
-    throw new Error("Permission is required");
-  }
-  throw new Error(
-    "useUserHasPermissions is unsupported. This application uses role-only authorization.",
+  const permissionSet = useMemo(() => new Set(permissions), [permissions]);
+
+  const hasPermission = useCallback(
+    (permission: string): boolean => {
+      return hasPermissionFromSet(permissionSet, permission);
+    },
+    [permissionSet],
   );
+
+  const hasAllPermissions = useCallback(
+    (required: string[]): boolean => {
+      return hasAllPermissionsFromSet(permissionSet, required);
+    },
+    [permissionSet],
+  );
+
+  const hasAnyPermission = useCallback(
+    (required: string[]): boolean => {
+      return hasAnyPermissionFromSet(permissionSet, required);
+    },
+    [permissionSet],
+  );
+
+  return {
+    permissions,
+    hasPermission,
+    hasAllPermissions,
+    hasAnyPermission,
+    isLoading,
+  };
 };
