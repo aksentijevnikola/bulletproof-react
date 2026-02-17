@@ -1,11 +1,4 @@
-// src/shared/config/environment.ts
-// Authoritative frontend environment configuration
-
-type EnvMode = "development" | "production" | "test";
-
-/* --------------------------------------------------
- * Internal helpers (file-local only)
- * -------------------------------------------------- */
+import { parseBooleanEnv, parseIntegerEnv } from "../../../config/parsers";
 
 const readString = (key: keyof ImportMetaEnv, fallback: string): string => {
   const value = import.meta.env[key];
@@ -13,23 +6,19 @@ const readString = (key: keyof ImportMetaEnv, fallback: string): string => {
 };
 
 const readBoolean = (key: keyof ImportMetaEnv, fallback = false): boolean => {
-  const value = import.meta.env[key];
-  if (value === "true") return true;
-  if (value === "false") return false;
-  return fallback;
+  return parseBooleanEnv(import.meta.env[key]) ?? fallback;
 };
 
 const readNumber = (key: keyof ImportMetaEnv, fallback: number): number => {
-  const value = Number(import.meta.env[key]);
-  return Number.isFinite(value) ? value : fallback;
+  try {
+    return parseIntegerEnv(import.meta.env[key], String(key)) ?? fallback;
+  } catch {
+    return fallback;
+  }
 };
 
-/* --------------------------------------------------
- * Environment flags
- * -------------------------------------------------- */
-
 export const ENV = {
-  MODE: import.meta.env.MODE as EnvMode,
+  MODE: import.meta.env.MODE,
   IS_DEV: import.meta.env.MODE === "development",
   IS_PROD: import.meta.env.PROD,
   IS_TEST: import.meta.env.MODE === "test",
@@ -37,15 +26,18 @@ export const ENV = {
   PRODUCTION: import.meta.env.PROD,
 } as const;
 
-/* --------------------------------------------------
- * Application configuration (immutable)
- * -------------------------------------------------- */
-
 export const APP_CONFIG = {
   API: {
-    BASE_URL: readString("VITE_API_BASE_URL", "http://localhost:3001/api"),
+    BASE_URL: readString("VITE_API_BASE_URL", "/api"),
     TIMEOUT: readNumber("VITE_API_TIMEOUT", 30_000),
     RETRY_ATTEMPTS: readNumber("VITE_API_RETRY_ATTEMPTS", ENV.IS_DEV ? 1 : 3),
+  },
+
+  COUNTRIES_API: {
+    BASE_URL: readString(
+      "VITE_COUNTRIES_API_BASE_URL",
+      "https://restcountries.com/v3.1",
+    ),
   },
 
   FEATURES: {
@@ -71,6 +63,10 @@ export const APP_CONFIG = {
       "VITE_QUERY_GC_TIME",
       ENV.IS_DEV ? 300_000 : 600_000,
     ),
+    QUERY_PERSIST_MAX_AGE: readNumber(
+      "VITE_QUERY_PERSIST_MAX_AGE",
+      1000 * 60 * 60 * 24,
+    ),
     OFFLINE_ENABLED: readBoolean("VITE_ENABLE_OFFLINE"),
   },
 
@@ -86,10 +82,6 @@ export const APP_CONFIG = {
   },
 } as const;
 
-/* --------------------------------------------------
- * Derived helpers (read-only)
- * -------------------------------------------------- */
-
 export const envUtils = {
   isDev: () => ENV.IS_DEV,
   isProd: () => ENV.IS_PROD,
@@ -104,7 +96,10 @@ export const envUtils = {
 
   getQueryConfig: () => ({
     staleTime: APP_CONFIG.CACHE.QUERY_STALE_TIME,
-    gcTime: APP_CONFIG.CACHE.QUERY_GC_TIME,
+    gcTime: Math.max(
+      APP_CONFIG.CACHE.QUERY_GC_TIME,
+      APP_CONFIG.CACHE.QUERY_PERSIST_MAX_AGE,
+    ),
     retry: APP_CONFIG.API.RETRY_ATTEMPTS,
     refetchOnWindowFocus: ENV.IS_DEV,
     refetchOnReconnect: ENV.IS_DEV,

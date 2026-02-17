@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import LoadingSpinner from "@shared/ui/LoadingSpinner";
-import { useAuth } from "../context/auth-context";
-import { useIsAuthenticated } from "../context/user-context";
+import { useAuth, useIsAuthenticated } from "../../context";
 
 interface ProtectedRouteProps {
   loadingFallback?: ReactNode;
@@ -25,7 +24,6 @@ export const ProtectedRoute = ({
     [loadingFallback],
   );
 
-  // Show loading state
   if (loading) {
     return <>{loadingContent}</>;
   }
@@ -34,7 +32,6 @@ export const ProtectedRoute = ({
     return <Navigate to="/login" replace />;
   }
 
-  // Check authentication
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

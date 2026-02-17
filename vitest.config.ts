@@ -13,5 +13,15 @@ export default defineConfig({
     clearMocks: true,
     restoreMocks: true,
     mockReset: true,
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "json-summary"],
+      thresholds: {
+        lines: 65,
+        statements: 65,
+        functions: 60,
+        branches: 60,
+      },
+    },
   },
 });

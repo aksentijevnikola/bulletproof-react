@@ -5,9 +5,10 @@
     "conflictResolutionOrder": [
       "codex.rules.json",
       "frontend.rules.json",
+      "project-structure.md",
       "design-system.md",
       "testing.md",
-      "frontend-plan.md",
+      "progress.md",
       "inline comments"
     ]
   },
@@ -23,6 +24,17 @@
     "spaOnly": true,
     "esmOnly": true,
     "noSSR": true
+  },
+
+  "currentProjectSetup": {
+    "routing": "react-router-dom@7",
+    "serverState": "@tanstack/react-query@5",
+    "forms": "react-hook-form",
+    "validation": "zod@4",
+    "httpClient": "axios",
+    "urlState": "nuqs",
+    "i18n": "i18next",
+    "ui": "feature-owned UI with minimal shared primitives (no MUI dependency)"
   },
 
   "tooling": {
@@ -131,7 +143,7 @@
         "auth.contracts.ts",
         "query-keys.ts",
         "api.client.ts",
-        "advanced-select.adapter.ts"
+        "table-query-params.ts"
       ],
       "allowed": [
         "camelCase filenames ONLY when colocated inside a feature and tightly coupled to React logic"
@@ -145,7 +157,7 @@
       "examples": [
         "features/auth",
         "features/dashboard",
-        "shared/ui/preline",
+        "shared/ui/data-table",
         "shared/config"
       ],
       "forbidden": [
@@ -190,6 +202,7 @@
     "description": "Frontend domain and API-visible types must be owned by Zod schemas or explicit domain types. Do not let UI component prop shapes become the owner of domain models.",
     "rules": [
       "API request/response types MUST be derived from schemas (z.input/z.output) or generated types (if adopted later).",
+      "Zod-derived type aliases MUST use the naming convention: NamePayload for z.input<typeof Schema> and NameResponse for z.output<typeof Schema>.",
       "Do not define API response shapes directly as TS interfaces in UI layers.",
       "Feature DTOs must live in the feature (or shared validators if reused across features).",
       "Shared UI primitives must not import feature-level domain types."
@@ -445,27 +458,52 @@
     }
   },
 
-  "prelineUi": {
-    "rules": {
-      "prelineIsMarkupFirst": true,
-      "markupOnlyAllowedEverywhere": true,
-      "jsPoweredForbiddenByDefault": true,
-      "examplesMustLiveInDocs": true,
-      "jsPoweredMust": [
-        "live in src/shared/ui/preline",
-        "be wrapped in React",
-        "initialize in useEffect",
-        "cleanup on unmount",
-        "never rely on global autoInit"
+  "accessibilityBaseline": {
+    "description": "Mandatory minimal accessibility baseline for implementation and review phases.",
+    "classification": {
+      "pass": "Minimal baseline maintained.",
+      "needsFix": "Baseline violation detected.",
+      "blocked": "Regression introduced."
+    },
+    "required": {
+      "semanticInteractiveHtml": [
+        "Use semantic interactive elements: button, a, input, select, textarea, label, table, th.",
+        "Do not use clickable div/span unless explicitly justified."
       ],
-      "prelineMustNot": [
-        "own application state",
-        "fetch data",
-        "run in loaders or queries",
-        "run globally"
+      "keyboardOperability": [
+        "All interactive elements must be reachable and operable by keyboard.",
+        "No keyboard traps or unreachable regions."
       ],
-      "reactIsSingleSourceOfTruth": true
-    }
+      "visibleFocus": [
+        "Focus visibility must remain visible for keyboard users.",
+        "Do not suppress focus visibility with focus:outline-none, focus:ring-0, or focus:shadow-none.",
+        "Use token-backed focus-visible styles, for example focus-visible:ring-2 focus-visible:ring-ring."
+      ],
+      "buttonSemantics": [
+        "Every button must set the correct type attribute (button or submit).",
+        "Icon-only buttons must provide an aria-label."
+      ],
+      "paginationSemantics": [
+        "Active pagination item must set aria-current=\"page\".",
+        "Previous and Next controls must provide explicit aria-label values."
+      ],
+      "sortableTableHeaders": [
+        "Sortable table headers must expose accurate aria-sort."
+      ],
+      "checkboxLabels": [
+        "Checkbox inputs must have accessible labels describing action scope."
+      ]
+    },
+    "outOfScopeByDefault": [
+      "Advanced ARIA patterns beyond this baseline.",
+      "ARIA live regions.",
+      "Landmark role restructuring.",
+      "Full WCAG audit/compliance testing.",
+      "Color contrast adjustments unless demonstrably broken.",
+      "Modal focus-trap perfection unless basic interaction is visibly broken.",
+      "Screen reader narrative optimization beyond semantic correctness."
+    ],
+    "reviewRule": "Do not fail reviews solely for missing advanced accessibility enhancements outside this baseline."
   },
 
   "notifications": {
@@ -716,7 +754,7 @@
 
     "documentationDiscipline": {
       "description": "Structural refactors that change documented module layout must update documentation unless explicitly forbidden.",
-      "requiredDocs": ["frontend-plan.md", "testing.md", "design-system.md"],
+      "requiredDocs": ["project-structure.md", "state-management.md", "api-layer.md", "design-system.md", "testing.md"],
       "exception": "If the user explicitly forbids documentation updates, do not modify docs."
     }
   }

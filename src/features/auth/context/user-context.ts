@@ -1,19 +1,17 @@
 import type { ReactNode } from "react";
 import { createContext, createElement, useContext, useMemo } from "react";
-import type { User } from "../api/auth.contracts";
-import { useCurrentUser } from "../hooks/useCurrentUser";
+import type { UserResponse } from "../api/auth.contracts";
+import { useCurrentUser } from "../hooks";
 
 export type UserContextValue = {
-  user: User | null;
+  user: UserResponse | null;
   isAuthenticated: boolean;
 };
 
-// Create context
 export const UserContext = createContext<UserContextValue | undefined>(
   undefined,
 );
 
-// User Provider component
 type UserProviderProps = { children: ReactNode };
 
 export const UserProvider = ({ children }: UserProviderProps) => {
@@ -30,8 +28,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   return createElement(UserContext.Provider, { value: contextValue }, children);
 };
 
-
-// Hook to use user context
 export const useUserContext = (): UserContextValue => {
   const context = useContext(UserContext);
   if (context === undefined) {
@@ -40,13 +36,12 @@ export const useUserContext = (): UserContextValue => {
   return context;
 };
 
-// Helper hooks
-export const useUser = (): User | null => {
+export const useUser = (): UserResponse | null => {
   const { user } = useUserContext();
   return user;
 };
 
-export const useUserRole = (): User["role"] | null => {
+export const useUserRole = (): UserResponse["role"] | null => {
   const { user } = useUserContext();
   return user?.role || null;
 };

@@ -7,6 +7,70 @@ Structured, human-readable log of meaningful frontend changes.
 
 ## Entries
 
+## 2026-02-17 - Documentation Refresh and README Canonicalization
+
+Summary:
+- Added root `README.md` as the high-level project entry point.
+- Removed `docs/guide.md` and cleaned documentation cross-references.
+- Refreshed architecture docs to match the current codebase surface (auth, UI ownership, API/state/testing boundaries).
+- Updated Codex rule references to current documentation artifacts.
+
+Impacts:
+- Documentation map is now rooted in `README.md` plus the existing docs set.
+- Stale references to removed planning/guide docs no longer drive architectural guidance.
+- Rules and docs are aligned with the current branch setup.
+
+## 2026-02-10 - Shared DataTable Responsiveness And Toolbar Controls
+
+Summary:
+- Made the shared DataTable scroll within its container (toolbar + pagination stay visible).
+- Added opt-in table-level sorting controls, dynamic filters, and scoped search support.
+- Added optional sticky header support for long tables.
+
+Impacts:
+- Tables can avoid page-level scrolling when embedded in constrained layouts.
+- Features can keep table logic domain-local while reusing a consistent infra shell.
+
+## 2026-02-09 - URL-Synced Admin Users Table Example
+
+Summary:
+- Added a feature-level admin users table wrapper that syncs table state to URL search params.
+- Wired TanStack Table manual mode to React Query with URL-driven query keys.
+
+Impacts:
+- Dashboard table state is shareable via URL and persists on refresh.
+- Shared DataTable remains a dumb UI primitive while features own data fetching.
+
+## 2026-02-09 - Permission-Based Authorization Hook
+
+Summary:
+- Removed role/permission guard components.
+- Added a canonical permission-checking hook and AccessDenied UI.
+- Updated security documentation to reflect permission-based authorization.
+
+Impacts:
+- Authorization checks are now permission-based and render-only.
+- Role-only authorization is no longer the default pattern.
+
+## 2026-02-09 - Zod Type Alias Naming Convention
+
+Summary:
+- Standardized Zod-derived type aliases to `NamePayload` for inputs and `NameResponse` for outputs.
+- Removed duplicate login form alias to keep a single source of truth.
+
+Impacts:
+- API contract types are now consistently named across features.
+
+## 2026-02-09 - Shared DataTable Wrapper
+
+Summary:
+- Added a shared DataTable wrapper with sorting, pagination, and optional row selection.
+- Opted the DataTable module out of the React Compiler for compatibility.
+
+Impacts:
+- Shared UI primitives now include a reusable table wrapper.
+- Table rendering avoids compiler-driven regressions.
+
 ## 2026-02-03 - Remove Permission Wildcard Semantics
 
 Summary:
@@ -66,9 +130,9 @@ Impacts:
 ## 2026-01-31 - Roadmap Canonicalization
 
 Summary:
-- Added `docs/roadmap.md` as the planning-only roadmap for phased work
-- Removed the legacy frontend plan; planning now lives in `docs/roadmap.md`
-- Updated `docs/guide.md` to point to the roadmap as the planning reference
+- Added a planning-only roadmap document for phased work
+- Removed the legacy frontend plan and consolidated planning references
+- Updated the architecture guide to point to the planning roadmap
 
 Impacts:
 - Planning guidance is centralized and separated from architectural policy
