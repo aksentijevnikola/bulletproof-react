@@ -10,9 +10,9 @@ catalog:
   vite: npm:@voidzero-dev/vite-plus-core@1.0.0-rc.0
   vite-plus: 1.0.0-rc.0
   vitest: 5.0.2
-minimumReleaseAge: 1440
-minimumReleaseAgeStrict: true
-minimumReleaseAgeExcludePrune: true
+# minimumReleaseAge: 1440
+# minimumReleaseAgeStrict: true
+# minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - "@tanstack/router-core@1.171.32"
   - "@tanstack/router-generator@1.167.38"
@@ -59,6 +59,8 @@ minimumReleaseAgeExclude:
   - react-dom@19.3.0
   - react@19.3.0
   - scheduler@0.28.0
+  - "@feature-sliced/steiger-plugin@0.8.0"
+  - steiger@0.7.0
 overrides:
   vite@*: "catalog:"
   vitest@*: "catalog:"

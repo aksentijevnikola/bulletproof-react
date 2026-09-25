@@ -7,8 +7,6 @@
     "dev": "vp dev",
     "api:gen": "orval --config orval.config.ts",
     "api:check": "node scripts/check-generated-api.ts",
-    "skills:load": "intent load",
-    "skills:list": "intent list",
     "ui:add": "shadcn add",
     "build": "vp build && tsc -b",
     "typecheck": "tsc -b --pretty false",
@@ -48,7 +46,6 @@
     "@feature-sliced/steiger-plugin": "0.8.0",
     "@playwright/test": "1.63.0",
     "@rolldown/plugin-babel": "0.2.4",
-    "@tanstack/intent": "0.4.0",
     "@tanstack/router-plugin": "1.168.40",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
@@ -80,14 +77,6 @@
       "version": "24.21.0",
       "onFail": "ignore"
     }
-  },
-  "intent": {
-    "skills": [
-      "@tanstack/react-table",
-      "@tanstack/router-core",
-      "@tanstack/router-plugin",
-      "@tanstack/table-core"
-    ]
   },
   "msw": {
     "workerDirectory": [
