@@ -9,14 +9,25 @@ lerna-debug.log*
 
 node_modules
 dist
-coverage
 dist-ssr
 *.local
+
+# Only the template is committed; the schema itself is in src/shared/config/env.ts.
 .env
 .env.*
 !.env.example
-!.env.development
-!.env.production
+
+# TanStack Router's generated tree is committed for clean-checkout typecheck/tests.
+
+# Generated API output is committed so a clean checkout builds without regeneration.
+
+.vite-hooks/_/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
 # Editor directories and files
 .vscode/*
@@ -28,3 +39,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+!.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.vitest/

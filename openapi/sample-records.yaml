@@ -1,0 +1,97 @@
+openapi: 3.1.0
+info:
+  title: Sample Records API
+  version: 1.0.0
+  description: Disposable example contract for the application shell.
+paths:
+  /api/sample-records:
+    get:
+      operationId: listSampleRecords
+      tags: [SampleRecords]
+      summary: List sample records
+      responses:
+        "200":
+          description: Sample record collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SampleRecordList"
+  /api/sample-records/{recordId}:
+    get:
+      operationId: getSampleRecord
+      tags: [SampleRecords]
+      summary: Get a sample record
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sample record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SampleRecord"
+        "404":
+          description: Not found
+    patch:
+      operationId: renameSampleRecord
+      tags: [SampleRecords]
+      summary: Rename a sample record
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenameSampleRecord"
+      responses:
+        "200":
+          description: Updated record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SampleRecord"
+        "404":
+          description: Not found
+components:
+  schemas:
+    SampleRecord:
+      type: object
+      additionalProperties: false
+      required: [id, title, summary, status]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        status:
+          type: string
+          enum: [draft, ready]
+    SampleRecordList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SampleRecord"
+    RenameSampleRecord:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 80

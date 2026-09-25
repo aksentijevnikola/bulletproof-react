@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+pnpm exec vp staged
+pnpm typecheck
+pnpm fsd:check

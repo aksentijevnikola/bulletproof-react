@@ -1,0 +1,71 @@
+savePrefix: ""
+catalogMode: manual
+catalogPrune: true
+runtimeOnFail: ignore
+nodeVersion: 24.21.0
+allowBuilds:
+  esbuild: true
+  msw: false
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.0.0-rc.0
+  vite-plus: 1.0.0-rc.0
+  vitest: 5.0.2
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExclude:
+  - "@tanstack/router-core@1.171.32"
+  - "@tanstack/router-generator@1.167.38"
+  - "@tanstack/router-plugin@1.168.40"
+  # Existing lockfile resolutions published inside the 24-hour window.
+  # Keep these exact exceptions only until the lockfile is refreshed after maturity.
+  - "@rolldown/binding-android-arm-eabi@1.2.11"
+  - "@rolldown/binding-android-arm64@1.2.11"
+  - "@rolldown/binding-darwin-arm64@1.2.11"
+  - "@rolldown/binding-darwin-x64@1.2.11"
+  - "@rolldown/binding-freebsd-x64@1.2.11"
+  - "@rolldown/binding-linux-arm-gnueabihf@1.2.11"
+  - "@rolldown/binding-linux-arm64-gnu@1.2.11"
+  - "@rolldown/binding-linux-arm64-musl@1.2.11"
+  - "@rolldown/binding-linux-ppc64-gnu@1.2.11"
+  - "@rolldown/binding-linux-s390x-gnu@1.2.11"
+  - "@rolldown/binding-linux-x64-gnu@1.2.11"
+  - "@rolldown/binding-linux-x64-musl@1.2.11"
+  - "@rolldown/binding-openharmony-arm64@1.2.11"
+  - "@rolldown/binding-win32-arm64-msvc@1.2.11"
+  - "@rolldown/binding-win32-x64-msvc@1.2.11"
+  - browserslist@4.29.1
+  - rolldown@1.2.11
+  - vitest@5.0.2
+  - "@vitest/mocker@5.0.2"
+  - "@vitest/spy@5.0.2"
+  - baseline-browser-mapping@2.11.26
+  - electron-to-chromium@1.5.439
+  - "@types/react-dom@19.3.0"
+  - zod@4.6.5
+  - "@voidzero-dev/vite-plus-core@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-darwin-arm64@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-darwin-x64@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-linux-arm64-gnu@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-linux-arm64-musl@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-linux-x64-gnu@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-linux-x64-musl@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-win32-arm64-msvc@1.0.0-rc.0"
+  - "@voidzero-dev/vite-plus-win32-x64-msvc@1.0.0-rc.0"
+  - vite-plus@1.0.0-rc.0
+  - "@tanstack/history@1.162.4"
+  - "@tanstack/router-utils@1.162.3"
+  - "@types/react@19.3.0"
+  - react-dom@19.3.0
+  - react@19.3.0
+  - scheduler@0.28.0
+overrides:
+  vite@*: "catalog:"
+  vitest@*: "catalog:"
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"

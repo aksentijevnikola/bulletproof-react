@@ -1,42 +1,51 @@
-import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import ErrorBoundary from "@shared/ui/ErrorBoundary";
-import LoadingSpinner from "@shared/ui/LoadingSpinner";
-import AppShellLayout from "@app/layout";
-import { ThemeSwitcher } from "@features/theme";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "@tanstack/react-router";
+import { Component, type ErrorInfo, type PropsWithChildren, type ReactNode } from "react";
 
-// Lazy load components for code splitting
-const Dashboard = lazy(() => import("@pages/Dashboard"));
+import { ErrorState } from "@/shared/ui/ErrorState";
 
-// Loading fallback component
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <LoadingSpinner />
-  </div>
-);
+import { createAppRouter, createQueryClient } from "./router";
+import { ThemeProvider } from "./theme-provider";
 
-const App = () => {
+const queryClient = createQueryClient();
+const router = createAppRouter(queryClient);
+
+interface BoundaryState {
+  failed: boolean;
+}
+
+class GlobalErrorBoundary extends Component<PropsWithChildren, BoundaryState> {
+  state: BoundaryState = { failed: false };
+
+  static getDerivedStateFromError(): BoundaryState {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Uncaught application error", error, info.componentStack);
+  }
+
+  render(): ReactNode {
+    if (this.state.failed) {
+      return (
+        <ErrorState
+          title="The application could not continue"
+          onRetry={() => window.location.reload()}
+        />
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            {/* Public route(s) */}
-            {/* <Route path="/login" element={<LoginPage />} /> */}
-
-            {/* Protected layout with nested routes */}
-            {/* <Route element={<ProtectedRoute />}> */}
-            <Route>
-              <Route element={<AppShellLayout headerRight={<ThemeSwitcher />} />}>
-                <Route index element={<Navigate to="/dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
-              </Route>
-            </Route>
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <GlobalErrorBoundary>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </ThemeProvider>
+    </GlobalErrorBoundary>
   );
-};
-
-export default App;
+}

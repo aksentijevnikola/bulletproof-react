@@ -1,0 +1,112 @@
+{
+  // oxfmt runs as an external process rather than a language server: the `oxc` Zed
+  // extension is what registers an `oxfmt` language server, and pointing `formatter`
+  // at a server that is not installed silently formats nothing. Shelling out to the
+  // binary in node_modules is the same code path `vp fmt` uses, so the editor and CI
+  // can never disagree about formatting.
+  "formatter": {
+    "external": {
+      "command": "./node_modules/.bin/oxfmt",
+      "arguments": ["--stdin-filepath", "{buffer_path}", "--config", "./vite.config.ts"]
+    }
+  },
+  "format_on_save": "on",
+
+  // oxfmt owns every format-on-save in this project; prettier must never be the fallback.
+  "prettier": {
+    "allowed": false
+  },
+
+  "lsp": {
+    // Requires the `tsgo` Zed extension (zed://extension/tsgo). Pinned to the
+    // workspace typescript version so the editor and `tsc -b` agree.
+    "typescript-ls": {
+      "settings": {
+        "package_version": "7.0.2"
+      }
+    },
+
+    // Requires the `oxc` Zed extension. Without it these settings are inert, but
+    // formatting above still works.
+    "oxlint": {
+      "initialization_options": {
+        "settings": {
+          "run": "onType",
+          "fixKind": "safe_fix",
+          "typeAware": true,
+          "unusedDisableDirectives": "deny"
+        }
+      }
+    }
+  },
+
+  "languages": {
+    // The `biome` extension is installed globally and would compete for formatting
+    // and diagnostics on these files, so it is disabled per-language.
+    "JavaScript": {
+      "tab_size": 2,
+      "code_actions_on_format": {
+        "source.fixAll.oxc": true
+      },
+      "language_servers": ["!biome", "..."]
+    },
+    "JSX": {
+      "tab_size": 2,
+      "code_actions_on_format": {
+        "source.fixAll.oxc": true
+      },
+      "language_servers": ["!biome", "..."]
+    },
+    "TypeScript": {
+      // Overrides tab_size 4 from the global Zed settings. oxfmt emits 2-space
+      // indents for JS/TS, so a wider auto-indent is undone on every save.
+      "tab_size": 2,
+      "code_actions_on_format": {
+        "source.organizeImports": true,
+        "source.fixAll.oxc": true
+      },
+      // typescript-ls is TS 7's native language server (`tsgo`), from the `tsgo`
+      // Zed extension. The workspace typescript@7 ships no tsserver.js, so the
+      // tsserver-based servers (vtsls/typescript-language-server) cannot use it
+      // and silently fall back to a bundled TS 6 — disable them instead.
+      "language_servers": [
+        "typescript-ls",
+        "!vtsls",
+        "!typescript-language-server",
+        "!biome",
+        "..."
+      ]
+    },
+    "TSX": {
+      "tab_size": 2,
+      "code_actions_on_format": {
+        "source.organizeImports": true,
+        "source.fixAll.oxc": true
+      },
+      "language_servers": [
+        "typescript-ls",
+        "!vtsls",
+        "!typescript-language-server",
+        "!biome",
+        "..."
+      ]
+    },
+    "JSON": {
+      "language_servers": ["!biome", "..."]
+    },
+    "JSONC": {
+      "language_servers": ["!biome", "..."]
+    },
+    "JSON5": {
+      "language_servers": ["!biome", "..."]
+    },
+    // oxfmt has no Markdown parser and exits non-zero on .md/.mdx, which surfaces as
+    // a failed-format toast on every save. Nothing else here formats Markdown.
+    "Markdown": {
+      "format_on_save": "off"
+    },
+    "MDX": {
+      "format_on_save": "off"
+    }
+  }
+}
